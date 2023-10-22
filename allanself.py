@@ -1,5 +1,5 @@
 import numpy as np
-def allanoadev_opt(y,t,rate):
+def allanoadev_opt(y,rate):
         
     # === Parameters ===
     
