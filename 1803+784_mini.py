@@ -40,20 +40,20 @@ df['BY'] = 2000-(51544.333981-df['MJD'])/365.242198781
 new_df = df.head(500)
 
 # Scatter plot + error bars of data points
-plt.subplot(211)
-plt.title('1803+784')
-plt.errorbar(new_df['BY'], new_df['RAcosDEC'],yerr=new_df['Err. R.A. (mas)'], fmt='o', ms=1, mec='black', ecolor='lightgrey', elinewidth=1)
-plt.ylim(-2,2)
-plt.xlabel('Year')
-plt.ylabel(r'$\alpha \cos \delta$ (mas)')
-plt.grid()
-plt.subplot(212)
-plt.errorbar(new_df['BY'], new_df['Dec. (mas)'], yerr=new_df['Err. Dec. (mas)'], fmt='o', ms=1, mec='black', ecolor='lightgrey', elinewidth=1)
-plt.ylim(-4,4)
-plt.xlabel('Year')
-plt.ylabel('$\delta$ (mas)')
-plt.grid()
-plt.show()
+# plt.subplot(211)
+# plt.title('1803+784')
+# plt.errorbar(new_df['BY'], new_df['RAcosDEC'],yerr=new_df['Err. R.A. (mas)'], fmt='o', ms=1, mec='black', ecolor='lightgrey', elinewidth=1)
+# plt.ylim(-2,2)
+# plt.xlabel('Year')
+# plt.ylabel(r'$\alpha \cos \delta$ (mas)')
+# plt.grid()
+# plt.subplot(212)
+# plt.errorbar(new_df['BY'], new_df['Dec. (mas)'], yerr=new_df['Err. Dec. (mas)'], fmt='o', ms=1, mec='black', ecolor='lightgrey', elinewidth=1)
+# plt.ylim(-4,4)
+# plt.xlabel('Year')
+# plt.ylabel('$\delta$ (mas)')
+# plt.grid()
+# plt.show()
 
 # ====== Creating dataframe with real dates ======
 
@@ -99,8 +99,15 @@ allanvar = []
 # Empty tau values array 
 tau = []
 
-# Create weights from RA data
-weights_std = 1/(merge_df['Err. Dec. (mas)'].values**2)
+# Create weights from Dec data
+weights_std = []
+for val in merge_df['Err. Dec. (mas)'].values:
+    if val != 0:
+        weights_std.append(1/(val**2))
+    elif val == 0:
+        weights_std.append(0)
+
+# print(weights_std)
 
 
 # Iterate over values of m
@@ -119,13 +126,18 @@ for k in range(len(m)):
     while right <= N:
         data_values = merge_df['Dec. (mas)'].values[left:right]
         data_sum = np.sum(data_values)
+        # print(data_sum)
     
         if data_sum == 0:
             D +=1
         else:
-            ybar.append(np.average(merge_df['Dec. (mas)'].values[left:right], weights=weights_std[left:right]))
+            # print(weights_std[left:right])
+            avg = np.average(data_values, weights=weights_std[left:right])
+            # print(avg)
+            ybar.append(avg)
         left += step 
         right += step    
+
             
     # print('Total amount of missing windows D: ' + str(D))
 
@@ -148,4 +160,11 @@ for k in range(len(m)):
     # Calculate tau
     tau.append(tau0*m[k])
 
-print(allanvar)
+allanstd = np.sqrt(allanvar)
+tau_year = [x/365.242198781 for x in tau]
+plt.plot(tau_year, allanstd)
+plt.yscale('log')
+# plt.ylim(10**(-1),10**3)
+plt.grid()
+plt.xlabel('Timescale [yr]')
+plt.ylabel('Allan std dev in $\delta$ [mas?]')
