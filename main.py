@@ -18,11 +18,11 @@ datatype = 2  #1: VieVS; 2: ivsopar
 #dataname_dec = 'data/2201+315_ivsopar.txt'
 #dataname_ra = 'data/2201+315_ivsopar.txt'
 
-dataname_dec = 'data/1803+784_ivsopar.txt'
-dataname_ra = 'data/1803+784_ivsopar.txt'
+# dataname_dec = 'data/1803+784_ivsopar.txt'
+# dataname_ra = 'data/1803+784_ivsopar.txt'
 
-#dataname_dec = 'data/ICRF3_Dem/1611+343_dem.txt'
-#dataname_ra = 'data/ICRF3_Dem/1611+343_dem.txt'
+dataname_dec = '1803+784_dem.txt'
+dataname_ra = '1803+784_dem.txt'
 
 
 mjd,by,dec,ra_n,errdec,errra_n = readdata(dataname_dec,dataname_ra,datatype)
